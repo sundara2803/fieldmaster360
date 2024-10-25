@@ -1,11 +1,8 @@
-// src/components/constants.ts
-
-// Define all field positions
 export const FIELD_POSITIONS = [
-    'Bowler',              // Added Bowler
-    'Wicketkeeper',        // Added Wicketkeeper
+    'bowler',
+    'WK',
     '1st slip', '2nd slip', '3rd slip', '4th slip', '5th slip', '6th slip', 'fly slip',
-    'gully', 'backward point', 'point', 'silly point', 'forward point', 'cover point', 'cover', 
+    'gully', 'backward point', 'point', 'silly point', 'forward point', 'cover point', 'cover',
     'short cover', 'extra cover', 'mid-off', 'deep mid-off', 'short mid-off', 'silly mid-off',
     'mid-on', 'deep mid-on', 'short mid-on', 'silly mid-on', 'short mid-wicket', 'mid-wicket',
     'short leg', 'square leg', 'forward square leg', 'backward square leg', 'leg slip', 'leg gully',
@@ -18,8 +15,8 @@ export const FIELD_POSITIONS = [
 
 // Define coordinates corresponding to each field position
 export const allposcoord = [
-    [0.432, 0.98 - 0.383], // Bowler
-    [0.425, 0.98 - 0.600], // Wicketkeeper
+    [0.482, 0.98 - 0.383], // Bowler
+    [0.465, 0.98 - 0.600], // Wicketkeeper
     [0.476, 0.98 - 0.633], // 1st slip
     [0.461, 0.98 - 0.630], // 2nd slip
     [0.443, 0.98 - 0.615], // 3rd slip
@@ -86,8 +83,8 @@ export const allposcoord = [
 
 // Define only the specified initial positions
 export const INITIAL_POSITIONS = [
-    'Bowler', 
-    'Wicketkeeper', 
+    'bowler', 
+    'WK', 
     'point', 
     'short third man', 
     'cover', 
@@ -100,7 +97,7 @@ export const INITIAL_POSITIONS = [
 ];
 
 // Get the initial positions with coordinates
-export const initialPositions = INITIAL_POSITIONS.map((position) => {
+export const initialPositions = FIELD_POSITIONS.map((position) => {
     const index = FIELD_POSITIONS.indexOf(position); // Find index of the position
     const coords = allposcoord[index]; // Get the corresponding coordinates
     if (!coords) {
@@ -109,8 +106,8 @@ export const initialPositions = INITIAL_POSITIONS.map((position) => {
     return {
         name: position,
         position: {
-            top: coords[1] * 100, // Convert to pixels based on height
-            left: coords[0] * 100, // Convert to pixels based on width
+            top: coords[1] * 100, 
+            left: coords[0] * 100,
         },
     };
 });

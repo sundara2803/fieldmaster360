@@ -1,5 +1,4 @@
-import React, { useState, useRef, useCallback } from 'react';
-import { useDrop } from 'react-dnd';
+import React, { useState, useRef } from 'react';
 import html2canvas from 'html2canvas';
 import styled from 'styled-components';
 import Player from './Player';
@@ -44,53 +43,6 @@ const Pitch = styled.div`
 const CricketField: React.FC = () => {
   const [players, setPlayers] = useState(initialPositions);
   const groundRef = useRef<HTMLDivElement>(null);
-
-  const handleDrop = useCallback(
-    (item: any, monitor: any) => {
-      const delta = monitor.getDifferenceFromInitialOffset();
-      if (!delta) return;
-
-      const playerIndex = players.findIndex((p) => p.name === item.player.name);
-      if (playerIndex !== -1) {
-        const newTop = Math.max(0, Math.min(100, players[playerIndex].position.top + delta.y / 8));
-        const newLeft = Math.max(0, Math.min(100, players[playerIndex].position.left + delta.x / 8));
-
-        let closestPositionName = players[playerIndex].name;
-        let minDistance = Infinity;
-
-        FIELD_POSITIONS.forEach((posName, index) => {
-          const [posLeft, posTop] = allposcoord[index];
-          const posLeftPct = posLeft * 100;
-          const posTopPct = posTop * 100;
-          const distance = Math.sqrt(
-            Math.pow(newLeft - posLeftPct, 2) + Math.pow(newTop - posTopPct, 2)
-          );
-
-          if (distance < minDistance) {
-            minDistance = distance;
-            closestPositionName = posName;
-          }
-        });
-
-        const updatedPlayers = [...players];
-        updatedPlayers[playerIndex] = {
-          ...updatedPlayers[playerIndex],
-          position: { top: newTop, left: newLeft },
-          name: closestPositionName,
-        };
-        setPlayers(updatedPlayers);
-      }
-    },
-    [players]
-  );
-
-  const [, drop] = useDrop(() => ({
-    accept: 'PLAYER',
-    drop: (item, monitor) => handleDrop(item, monitor),
-    collect: (monitor) => ({
-      isOver: !!monitor.isOver(),
-    }),
-  }));
 
   const saveAsImage = async () => {
     if (groundRef.current) {
