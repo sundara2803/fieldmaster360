@@ -1,25 +1,37 @@
-import React, { useState, useRef, useCallback } from 'react';
-import { useDrop } from 'react-dnd';
+import React, { useState, useRef } from 'react';
 import html2canvas from 'html2canvas';
 import styled from 'styled-components';
 import Player from './Player';
-import { allposcoord, FIELD_POSITIONS, initialPositions } from './constants';
+import { initialPositions } from './constants';
 
 const Container = styled.div`
   display: flex;
   flex-direction: column;
   align-items: center;
-  background-color: grey;
+  background-color: #e0e0e0;
+  width: 100%;
+  min-height: 100vh;
+  padding: 20px;
+`;
+
+const Heading = styled.h1`
+  font-size: 2rem;
+  color: #003300;
+  margin: 20px;
+  text-align: center;
 `;
 
 const CricketGround = styled.div`
   position: relative;
-  width: 800px;
-  height: 800px;
-  background-color: darkgreen;
+  width: 90vw;
+  height: 90vw;
+  max-width: 800px;
+  max-height: 800px;
+  background-color: #006400;
   border-radius: 50%;
-  margin: 20px auto;
   overflow: hidden;
+  border: 4px solid #fff;
+  margin: 20px auto;
 `;
 
 const InnerCircle = styled.div`
@@ -29,68 +41,58 @@ const InnerCircle = styled.div`
   top: 20%;
   left: 20%;
   border-radius: 50%;
-  border: 2px solid white;
+  border: 2px dashed #fff;
 `;
 
 const Pitch = styled.div`
   position: absolute;
   width: 4%;
   height: 22%;
-  background-color: brown;
+  background-color: #8b4513;
   top: 39%;
   left: 48%;
+  border-radius: 2px;
+`;
+
+const Button = styled.button`
+  border-radius: 8px;
+  padding: 12px 20px;
+  font-size: 16px;
+  color: #fff;
+  background-color: #003300;
+  border: none;
+  cursor: pointer;
+  transition: background-color 0.3s;
+  margin-top: 20px;
+
+  &:hover {
+    background-color: #005500;
+  }
+
+  &:focus {
+    outline: 3px solid #4caf50;
+  }
 `;
 
 const CricketField: React.FC = () => {
   const [players, setPlayers] = useState(initialPositions);
   const groundRef = useRef<HTMLDivElement>(null);
 
-  const handleDrop = useCallback(
-    (item: any, monitor: any) => {
-      const delta = monitor.getDifferenceFromInitialOffset();
-      if (!delta) return;
+  const togglePlayerSelection = (name: string) => {
+    const mandatoryPlayers = ['bowler', 'WK'];
+    if (mandatoryPlayers.includes(name)) return;
 
-      const playerIndex = players.findIndex((p) => p.name === item.player.name);
-      if (playerIndex !== -1) {
-        const newTop = Math.max(0, Math.min(100, players[playerIndex].position.top + delta.y / 8));
-        const newLeft = Math.max(0, Math.min(100, players[playerIndex].position.left + delta.x / 8));
+    const selectedPlayers = players.filter((player) => player.selected);
+    if (selectedPlayers.length >= 11 && !players.find((player) => player.name === name)?.selected) {
+      alert('Only 11 players can be selected');
+      return;
+    }
 
-        let closestPositionName = players[playerIndex].name;
-        let minDistance = Infinity;
-
-        FIELD_POSITIONS.forEach((posName, index) => {
-          const [posLeft, posTop] = allposcoord[index];
-          const posLeftPct = posLeft * 100;
-          const posTopPct = posTop * 100;
-          const distance = Math.sqrt(
-            Math.pow(newLeft - posLeftPct, 2) + Math.pow(newTop - posTopPct, 2)
-          );
-
-          if (distance < minDistance) {
-            minDistance = distance;
-            closestPositionName = posName;
-          }
-        });
-
-        const updatedPlayers = [...players];
-        updatedPlayers[playerIndex] = {
-          ...updatedPlayers[playerIndex],
-          position: { top: newTop, left: newLeft },
-          name: closestPositionName,
-        };
-        setPlayers(updatedPlayers);
-      }
-    },
-    [players]
-  );
-
-  const [, drop] = useDrop(() => ({
-    accept: 'PLAYER',
-    drop: (item, monitor) => handleDrop(item, monitor),
-    collect: (monitor) => ({
-      isOver: !!monitor.isOver(),
-    }),
-  }));
+    const updatedPlayers = players.map((player) =>
+      player.name === name ? { ...player, selected: !player.selected } : player
+    );
+    setPlayers(updatedPlayers);
+  };
 
   const saveAsImage = async () => {
     if (groundRef.current) {
@@ -105,14 +107,15 @@ const CricketField: React.FC = () => {
 
   return (
     <Container>
+      <Heading>Field Master 360</Heading>
       <CricketGround ref={groundRef}>
         <InnerCircle />
         <Pitch />
         {players.map((player, index) => (
-          <Player key={index} position={player.position} player={player} />
+          <Player key={index} position={player.position} player={player} onToggle={() => togglePlayerSelection(player.name)} />
         ))}
       </CricketGround>
-      <button onClick={saveAsImage}>Download Field Plan</button>
+      <Button onClick={saveAsImage}>Download Field Plan</Button>
     </Container>
   );
 };
