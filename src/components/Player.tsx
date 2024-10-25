@@ -5,8 +5,9 @@ const PlayerDiv = styled.div<{ position: { top: number; left: number } }>`
   position: absolute;
   top: ${(props) => props.position.top}%;
   left: ${(props) => props.position.left}%;
-  background-color: darkgreen;
   cursor: grab;
+  border-radius: 50%;
+  color: darkgreen;
 
   &:hover {
     background-color: darkgreen;
@@ -17,16 +18,32 @@ const PlayerDiv = styled.div<{ position: { top: number; left: number } }>`
   }
 `;
 
-const Player: React.FC<{ position: { top: number; left: number }; player: any }> = ({ position, player }) => {
+const RadioInput = styled.input<{ visible: boolean }>`
+  visibility: ${(props) => (props.visible ? 'visible' : 'hidden')};
+  accent-color: white;
+`;
 
+const PlayerText = styled.span<{ visible: boolean }>`
+  color: white;
+  visibility: ${(props) => (props.visible ? 'visible' : 'hidden')};
+`;
+
+interface PlayerProps {
+  position: { top: number; left: number };
+  player: { name: string; selected: boolean };
+  onToggle: () => void;
+}
+
+const Player: React.FC<PlayerProps> = ({ position, player, onToggle }) => {
   return (
-    <PlayerDiv
-      position={position}
-      style={{  borderRadius:"50%", color:"darkgreen" }}
-      title={player.name}
-    >
-      <input type="radio" style={{backgroundColor:"darkgreen",accentColor:"white"}}/>
-      <span style={{ color:"white" }}>{player.name}</span>
+    <PlayerDiv position={position} title={player.name} onClick={onToggle}>
+      <RadioInput
+        type="radio"
+        visible={player.selected} // Show radio only if player is selected
+        checked={player.selected}
+        readOnly
+      />
+      <PlayerText visible={player.selected}>{player.name}</PlayerText>
     </PlayerDiv>
   );
 };

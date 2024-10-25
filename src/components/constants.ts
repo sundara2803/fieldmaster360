@@ -81,22 +81,8 @@ export const allposcoord = [
     [0.921, 0.98 - 0.650], // deep backward square leg
 ];
 
-// Define only the specified initial positions
-export const INITIAL_POSITIONS = [
-    'bowler', 
-    'WK', 
-    'point', 
-    'short third man', 
-    'cover', 
-    'long on', 
-    'long off', 
-    'deep cover', 
-    'deep mid-wicket', 
-    'fine leg', 
-    'deep square leg'
-];
 
-// Get the initial positions with coordinates
+
 export const initialPositions = FIELD_POSITIONS.map((position) => {
     const index = FIELD_POSITIONS.indexOf(position); // Find index of the position
     const coords = allposcoord[index]; // Get the corresponding coordinates
@@ -109,5 +95,6 @@ export const initialPositions = FIELD_POSITIONS.map((position) => {
             top: coords[1] * 100, 
             left: coords[0] * 100,
         },
+        selected: ['bowler', 'WK', 'point', 'short third man', 'cover', 'long on', 'long off', 'deep cover', 'deep mid-wicket', 'short fine leg', 'deep square leg'].includes(position), // Only initial positions selected
     };
 });
