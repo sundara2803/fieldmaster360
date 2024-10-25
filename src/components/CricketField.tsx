@@ -2,31 +2,36 @@ import React, { useState, useRef } from 'react';
 import html2canvas from 'html2canvas';
 import styled from 'styled-components';
 import Player from './Player';
-import {initialPositions } from './constants';
+import { initialPositions } from './constants';
 
 const Container = styled.div`
   display: flex;
   flex-direction: column;
   align-items: center;
-  background-color: grey;
-  width:100%;
+  background-color: #e0e0e0;
+  width: 100%;
+  min-height: 100vh;
+  padding: 20px;
 `;
 
 const Heading = styled.h1`
   font-size: 2rem;
-  color: white;
+  color: #003300;
   margin: 20px;
+  text-align: center;
 `;
 
 const CricketGround = styled.div`
   position: relative;
-  width: 800px;
-  height: 800px;
-  background-color: darkgreen;
+  width: 90vw;
+  height: 90vw;
+  max-width: 800px;
+  max-height: 800px;
+  background-color: #006400;
   border-radius: 50%;
-  margin: 20px auto;
   overflow: hidden;
-  border: 2px solid white;
+  border: 4px solid #fff;
+  margin: 20px auto;
 `;
 
 const InnerCircle = styled.div`
@@ -36,16 +41,37 @@ const InnerCircle = styled.div`
   top: 20%;
   left: 20%;
   border-radius: 50%;
-  border: 2px solid white;
+  border: 2px dashed #fff;
 `;
 
 const Pitch = styled.div`
   position: absolute;
   width: 4%;
   height: 22%;
-  background-color: brown;
+  background-color: #8b4513;
   top: 39%;
   left: 48%;
+  border-radius: 2px;
+`;
+
+const Button = styled.button`
+  border-radius: 8px;
+  padding: 12px 20px;
+  font-size: 16px;
+  color: #fff;
+  background-color: #003300;
+  border: none;
+  cursor: pointer;
+  transition: background-color 0.3s;
+  margin-top: 20px;
+
+  &:hover {
+    background-color: #005500;
+  }
+
+  &:focus {
+    outline: 3px solid #4caf50;
+  }
 `;
 
 const CricketField: React.FC = () => {
@@ -54,20 +80,15 @@ const CricketField: React.FC = () => {
 
   const togglePlayerSelection = (name: string) => {
     const mandatoryPlayers = ['bowler', 'WK'];
-    const isMandatory = mandatoryPlayers.includes(name);
+    if (mandatoryPlayers.includes(name)) return;
 
-    // Prevent toggling mandatory players
-    if (isMandatory) return;
-
-    // Check the number of selected players before selecting more
-    const selectedPlayers = players.filter(player => player.selected);
-    if (selectedPlayers.length >= 11 && !players.find(player => player.name === name)?.selected) {
+    const selectedPlayers = players.filter((player) => player.selected);
+    if (selectedPlayers.length >= 11 && !players.find((player) => player.name === name)?.selected) {
       alert('Only 11 players can be selected');
       return;
     }
 
-    // Toggle the selected state of the player
-    const updatedPlayers = players.map(player =>
+    const updatedPlayers = players.map((player) =>
       player.name === name ? { ...player, selected: !player.selected } : player
     );
     setPlayers(updatedPlayers);
@@ -91,15 +112,10 @@ const CricketField: React.FC = () => {
         <InnerCircle />
         <Pitch />
         {players.map((player, index) => (
-          <Player
-            key={index}
-            position={player.position}
-            player={player}
-            onToggle={() => togglePlayerSelection(player.name)}
-          />
+          <Player key={index} position={player.position} player={player} onToggle={() => togglePlayerSelection(player.name)} />
         ))}
       </CricketGround>
-      <button onClick={saveAsImage}>Download Field Plan</button>
+      <Button onClick={saveAsImage}>Download Field Plan</Button>
     </Container>
   );
 };
